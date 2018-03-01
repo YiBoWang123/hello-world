@@ -1,0 +1,39 @@
+---
+title: "Untitled"
+output: html_document
+---
+#6.5
+```{r}
+good <- function(C,xbar,S,n,q,alpha){
+ transform <- C %*% xbar
+C %*% S %*% t(C)
+T_square <- n * ( t(C%*%xbar) %*% solve(C%*%S%*%t(C)) %*% C%*%xbar  )
+F_value <- (n-1)*(q-1)/(n-q+1) * qf(1-alpha, df1 = q-1, df2 = n-q+1)
+listOfvalue <- list(T_square,F_value,transform)
+
+
+
+return(listOfvalue)
+}
+
+
+n <- 40
+q <- 3
+alpha <- 0.05
+xbar <- matrix(c(46.1,57.3,50.4), ncol = 1, nrow =3, byrow = TRUE)
+S <- matrix(c(101.3,63.0,71.0,63.0,80.2,55.6,71.0,55.6,97.4), nrow = 3,ncol = 3, byrow = TRUE)
+C <- matrix(c(1,-1,0,0,1,-1), ncol = 3, nrow = 2, byrow = TRUE)
+
+
+good(C,xbar,S,40,3,0.05)
+
+-11.2 - sqrt(6.660417)*sqrt(((head(C,1))%*%S%*%t(head(C,1)))/n)
+-11.2 + sqrt(6.660417)*sqrt(((head(C,1))%*%S%*%t(head(C,1)))/n)
+6.9 - sqrt(6.660417)*sqrt(((C[2,] )%*%S%*%matrix(C[2,]))/n)
+6.9 + sqrt(6.660417)*sqrt(((C[2,] )%*%S%*%matrix(C[2,]))/n)
+
+
+
+((C[2,] )%*%S%*%matrix(C[2,]))
+
+```
