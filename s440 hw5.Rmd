@@ -12,7 +12,7 @@ F_value <- (n-1)*(q-1)/(n-q+1) * qf(1-alpha, df1 = q-1, df2 = n-q+1)
 listOfvalue <- list(T_square,F_value,transform)
 
 
-
+,
 return(listOfvalue)
 }
 
@@ -34,7 +34,7 @@ good(C,xbar,S,40,3,0.05)
 
 
 
-((C[2,] )%*%S%*%matrix(C[2,]))
+
 
 ```
 
@@ -52,7 +52,9 @@ good(C,xbar,S,40,3,0.05)
 
 
 #(B)
-
+population1 = matrix(c(9,6,9,3,2,7), nrow = 3, ncol = 2, byrow = FALSE)
+population2 = matrix(c(0,2,4,0), nrow = 2, ncol = 2, byrow = FALSE)
+population3 = matrix(c(3,1,2,8,9,7), nrow = 3, ncol = 2, byrow = FALSE)
 
 
 ```
