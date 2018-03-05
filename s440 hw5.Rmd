@@ -63,57 +63,229 @@ population3 = matrix(c(3,1,2,8,9,7), nrow = 3, ncol = 2, byrow = FALSE)
 
 #6.13
 ```{r}
-#(a)
+#(a) first variable
 a <- c(6,4,8,2,
        3,-3,4,-4,
        -3,-4,3,-4)
-a_matrix <- matrix(a, nrow = 3, ncol = 4, byrow = TRUE)
-a_matrix[1,1]
+nr <- 3
+nc <- 4
+a_matrix <- matrix(a, nrow = nr, ncol = nc, byrow = TRUE)
 funcs <- function(x_bar,xlevelOffactor1_bar, ylevelOffactor2_bar, xyobservation ) {
   first_term <- x_bar
   second_term <- xlevelOffactor1_bar - x_bar
   third_term <- ylevelOffactor2_bar - x_bar
   fourth_term <- xyobservation - xlevelOffactor1_bar - ylevelOffactor2_bar + x_bar
-  return(list(first_term,
+  return(c(first_term,
               second_term,
               third_term,
               fourth_term))
 }
-for (i in 1:3){
-  for(j in 1:4) {
+af_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+as_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+at_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+afo_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+  
+for (i in 1:nr){
+  for(j in 1:nc) {
     print(paste(i,j,sep=","))
-    print(funcs(mean(a),mean(a_matrix[i,]),mean(a_matrix[,j]),a_matrix[i,j]))
+    out <- funcs(mean(a),mean(a_matrix[i,]),mean(a_matrix[,j]),a_matrix[i,j])
+    print(out)
     print("-----------------------------")
+    af_matrix[i,j] <- out[1]
+    as_matrix[i,j] <- out[2]
+    at_matrix[i,j] <- out[3]
+    afo_matrix[i,j] <- out[4]
+    
   }
 }
-
-
+af_matrix
+as_matrix
+at_matrix
+afo_matrix
+#(a) second variable
+b <- c(8,6,12,6,
+       8,2,3,3,
+       2,-5,-3,-6)
+nr <- 3
+nc <- 4
+a_matrix <- matrix(b, nrow = nr, ncol = nc, byrow = TRUE)
+funcs <- function(x_bar,xlevelOffactor1_bar, ylevelOffactor2_bar, xyobservation ) {
+  first_term <- x_bar
+  second_term <- xlevelOffactor1_bar - x_bar
+  third_term <- ylevelOffactor2_bar - x_bar
+  fourth_term <- xyobservation - xlevelOffactor1_bar - ylevelOffactor2_bar + x_bar
+  return(c(first_term,
+              second_term,
+              third_term,
+              fourth_term))
+}
+bf_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+bs_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+bt_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+bfo_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+  
+for (i in 1:nr){
+  for(j in 1:nc) {
+    print(paste(i,j,sep=","))
+    out <- funcs(mean(b),mean(a_matrix[i,]),mean(a_matrix[,j]),a_matrix[i,j])
+    print(out)
+    print("-----------------------------")
+    bf_matrix[i,j] <- out[1]
+    bs_matrix[i,j] <- out[2]
+    bt_matrix[i,j] <- out[3]
+    bfo_matrix[i,j] <- out[4]
+    
+  }
+}
+bf_matrix
+bs_matrix
+bt_matrix
+bfo_matrix
+#-----------------------------------------------------------------------------
 #(b)
-h <- c(6,4,8,2,
-       3,-3,4,-4,
-       -3,-4,3,-4) %*% c(6,4,8,2,
-                         3,-3,4,-4,
-                         -3,-4,3,-4)
-f <- c(1,1,1,1,
-       1,1,1,1,
-       1,1,1,1) %*% c(1,1,1,1,
-                     1,1,1,1,
-                     1,1,1,1)
-s <- c(4,4,4,4,
-       -1,-1,-1,-1,
-       -3,-3,-3,-3) %*% c(4,4,4,4,
-                          -1,-1,-1,-1,
-                          -3,-3,-3,-3)
-t <- c(1,-2,4,-3,
-       1,-2,4,-3,
-       1,-2,4,-3) %*% c(1,-2,4,-3,
-                        1,-2,4,-3,
-                        1,-2,4,-3)
-fo <- c(0,1,-1,0,
-       2,-1,0,-1,
-       -2,0,1,1) %*% c(0,1,-1,0,
-                       2,-1,0,-1,
-                       -2,0,1,1)
+b %*% b
+a %*% a
+
+#-----------------------
+#first variable
+as.vector(af_matrix) %*% as.vector(af_matrix)
+as.vector(as_matrix) %*% as.vector(as_matrix)
+as.vector(at_matrix) %*% as.vector(at_matrix)
+as.vector(afo_matrix) %*% as.vector(afo_matrix)
+#second variable
+as.vector(bf_matrix) %*% as.vector(bf_matrix)
+as.vector(bs_matrix) %*% as.vector(bs_matrix)
+as.vector(bt_matrix) %*% as.vector(bt_matrix)
+as.vector(bfo_matrix) %*% as.vector(bfo_matrix)
+
+SCP_mean <- as.vector(af_matrix) %*% as.vector(bf_matrix) 
+SCP_fac1 <- as.vector(as_matrix) %*% as.vector(bs_matrix)
+SCP_fac2 <- as.vector(at_matrix) %*% as.vector(bt_matrix)
+SCP_resi <- as.vector(afo_matrix) %*% as.vector(bfo_matrix)
+a %*% b
+
+SSP_fac1 <- matrix(c(as.vector(as_matrix) %*% as.vector(as_matrix),
+                     SCP_fac1,
+                     SCP_fac1,
+                     as.vector(bs_matrix) %*% as.vector(bs_matrix)), nrow = 2, ncol = 2, byrow = TRUE)
+SSP_fac2 <- matrix(c(as.vector(at_matrix) %*% as.vector(at_matrix),
+                     SCP_fac2,
+                     SCP_fac2,
+                     as.vector(bt_matrix) %*% as.vector(bt_matrix)), nrow = 2, ncol = 2, byrow = TRUE)
+SSP_resid <- matrix(c(as.vector(afo_matrix) %*% as.vector(afo_matrix),
+                      SCP_resi,
+                      SCP_resi,
+                      as.vector(bfo_matrix) %*% as.vector(bfo_matrix)), nrow = 2, ncol = 2, byrow = TRUE)
+SSP_cor <- matrix(c(a %*% a - as.vector(af_matrix) %*% as.vector(af_matrix),
+                    SCP_fac1+SCP_fac2+SCP_resi,
+                    SCP_fac1+SCP_fac2+SCP_resi,
+                    b %*% b - as.vector(bf_matrix) %*% as.vector(bf_matrix)), nrow = 2, ncol = 2, byrow = TRUE)
+
+
+
+
+
+
+
 h
 f+s+t+fo
+#   df
+f # 3*4 - 1
+s # 3-1
+t # 4-1
+fo #(3-1)*(4-1)
+```
+
+#6.14
+```{r}
+#(a) first variable
+c <- c(14,6,8,16,
+       1,5,0,2,
+       3,-2,-11,-6)
+nr <- 3
+nc <- 4
+a_matrix <- matrix(c, nrow = nr, ncol = nc, byrow = TRUE)
+funcs <- function(x_bar,xlevelOffactor1_bar, ylevelOffactor2_bar, xyobservation ) {
+  first_term <- x_bar
+  second_term <- xlevelOffactor1_bar - x_bar
+  third_term <- ylevelOffactor2_bar - x_bar
+  fourth_term <- xyobservation - xlevelOffactor1_bar - ylevelOffactor2_bar + x_bar
+  return(c(first_term,
+              second_term,
+              third_term,
+              fourth_term))
+}
+cf_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+cs_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+ct_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+cfo_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+  
+for (i in 1:nr){
+  for(j in 1:nc) {
+    print(paste(i,j,sep=","))
+    out <- funcs(mean(a),mean(a_matrix[i,]),mean(a_matrix[,j]),a_matrix[i,j])
+    print(out)
+    print("-----------------------------")
+    cf_matrix[i,j] <- out[1]
+    cs_matrix[i,j] <- out[2]
+    ct_matrix[i,j] <- out[3]
+    cfo_matrix[i,j] <- out[4]
+    
+  }
+}
+cf_matrix
+cs_matrix
+ct_matrix
+cfo_matrix
+#(a) second variable
+d <- c(8,2,2,16,
+       6,12,15,7,
+       -2,7,1,6)
+nr <- 3
+nc <- 4
+a_matrix <- matrix(d, nrow = nr, ncol = nc, byrow = TRUE)
+funcs <- function(x_bar,xlevelOffactor1_bar, ylevelOffactor2_bar, xyobservation ) {
+  first_term <- x_bar
+  second_term <- xlevelOffactor1_bar - x_bar
+  third_term <- ylevelOffactor2_bar - x_bar
+  fourth_term <- xyobservation - xlevelOffactor1_bar - ylevelOffactor2_bar + x_bar
+  return(c(first_term,
+              second_term,
+              third_term,
+              fourth_term))
+}
+df_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+ds_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+dt_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+dfo_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
+  
+for (i in 1:nr){
+  for(j in 1:nc) {
+    print(paste(i,j,sep=","))
+    out <- funcs(mean(a),mean(a_matrix[i,]),mean(a_matrix[,j]),a_matrix[i,j])
+    print(out)
+    print("-----------------------------")
+    df_matrix[i,j] <- out[1]
+    ds_matrix[i,j] <- out[2]
+    dt_matrix[i,j] <- out[3]
+    dfo_matrix[i,j] <- out[4]
+    
+  }
+}
+df_matrix
+ds_matrix
+dt_matrix
+dfo_matrix
+
+
+
+
+
+
+
+
+
+
+
+
 ```
