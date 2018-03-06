@@ -183,11 +183,12 @@ SSP_cor <- matrix(c(a %*% a - as.vector(af_matrix) %*% as.vector(af_matrix),
 
 
 
+lambda1 <- det(SSP_resid)/(det(SSP_fac1)+det(SSP_resid))
+lambda2 <- det(SSP_resid)/(det(SSP_fac2)+det(SSP_resid))
+p <- 2
+-((6)-((p+1-nr+1)/2))*log(lambda1) > qchisq(0.95, df=(nr-1)*p)
+-((6)-((p+1-nc+1)/2))*log(lambda2) > qchisq(0.95, df=(nc-1)*p)
 
-
-
-
-h
 f+s+t+fo
 #   df
 f # 3*4 - 1
@@ -223,7 +224,7 @@ cfo_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
 for (i in 1:nr){
   for(j in 1:nc) {
     print(paste(i,j,sep=","))
-    out <- funcs(mean(a),mean(a_matrix[i,]),mean(a_matrix[,j]),a_matrix[i,j])
+    out <- funcs(mean(c),mean(a_matrix[i,]),mean(a_matrix[,j]),a_matrix[i,j])
     print(out)
     print("-----------------------------")
     cf_matrix[i,j] <- out[1]
@@ -237,8 +238,15 @@ cf_matrix
 cs_matrix
 ct_matrix
 cfo_matrix
+c %*% c
+as.vector(cf_matrix) %*% as.vector(cf_matrix)
+as.vector(cs_matrix) %*% as.vector(cs_matrix)
+as.vector(ct_matrix) %*% as.vector(ct_matrix)
+as.vector(cfo_matrix) %*% as.vector(cfo_matrix)
+
+
 #(a) second variable
-d <- c(8,2,2,16,
+d <- c(8,2,2,-4,
        6,12,15,7,
        -2,7,1,6)
 nr <- 3
@@ -262,7 +270,7 @@ dfo_matrix <- matrix(double(nr*nc), nrow = nr, ncol = nc, byrow = TRUE)
 for (i in 1:nr){
   for(j in 1:nc) {
     print(paste(i,j,sep=","))
-    out <- funcs(mean(a),mean(a_matrix[i,]),mean(a_matrix[,j]),a_matrix[i,j])
+    out <- funcs(mean(d),mean(a_matrix[i,]),mean(a_matrix[,j]),a_matrix[i,j])
     print(out)
     print("-----------------------------")
     df_matrix[i,j] <- out[1]
