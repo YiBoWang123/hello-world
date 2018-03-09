@@ -189,12 +189,14 @@ p <- 2
 -((6)-((p+1-nr+1)/2))*log(lambda1) > qchisq(0.95, df=(nr-1)*p)
 -((6)-((p+1-nc+1)/2))*log(lambda2) > qchisq(0.95, df=(nc-1)*p)
 
-f+s+t+fo
-#   df
-f # 3*4 - 1
-s # 3-1
-t # 4-1
-fo #(3-1)*(4-1)
+g=3
+b=4
+p=2
+  
+FONE <- ((1-lambda1)/(lambda1))*((((g-1)*(b-1)-p+1)/2)/((abs(b-1-p)+1)/2))
+Ftwo <- ((1-lambda2)/(lambda2))*((((g-1)*(b-1)-p+1)/2)/((abs(b-1-p)+1)/2))
+
+qf(0.95, df1 = 5, df2 = 2)
 ```
 
 #6.14
@@ -338,11 +340,13 @@ lamb <- det(asdfg)/(det(asdf)+det(asdfg))
 alpha = .95
 g = 3
 b = 4
-n = 
+n = 1
 p = 4  
-E = 
-(e - m) - qt(alpha/(p*g(g-1)),(g-1)(b-1))*sqrt((E/((g-1)*(b-1)))*(1/(b*n)))
-(e - m) + qt(alpha/(p*g(g-1)),(g-1)(b-1))*sqrt((E/((g-1)*(b-1)))*(1/(b*n)))
+E = 14
+(14-1) - qt(alpha/(p*g*(g-1)),(g-1)*(b-1))*sqrt((E/((g-1)*(b-1)))*(1/(b*n)))
+(14-1) + qt(alpha/(p*g*(g-1)),(g-1)*(b-1))*sqrt((E/((g-1)*(b-1)))*(1/(b*n)))
+
+
 
 
 ```
