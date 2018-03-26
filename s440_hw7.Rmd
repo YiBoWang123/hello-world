@@ -1,0 +1,76 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{R}
+
+a <- as.matrix(data.frame(c(1,.4919,.2636,.4653,-.2277,.0652),
+               c(.4919,1,.3127,.3506,-.1917,.2045),
+               c(.2635,.3127,1,.4108,.0647,.2493),
+               c(.4653,.3506,.4108,1,-.2249,.2293),
+               c(-.2277,-.1917,.0647,-.2249,1,-.2144),
+               c(.0652,.2045,.2493,.2293,-.2144,1)))
+eigen(a)$values
+eigen(a)$vectors
+
+
+
+
+```
+
+```{r}
+housing <- read.csv("http://www.stat.cmu.edu/~cshalizi/ADAfaEPoV/data/calif_penn_2011.csv")
+housing <- na.omit(housing)
+calif <- housing[housing$STATEFP == 6, ]
+
+
+
+e <- as.matrix(calif[10:15])
+cor(e)
+vectors <- eigen(cor(e))$vectors
+calif$pc1 <- vectors[1,1] * calif[,10] + 
+             vectors[2,1] * calif[,11] +
+             vectors[3,1] * calif[,12] +
+             vectors[4,1] * calif[,13] +
+             vectors[5,1] * calif[,14] + 
+             vectors[6,1] * calif[,15]
+
+calif$pc2 <- vectors[1,2] * calif[,10] + 
+             vectors[2,2] * calif[,11] +
+             vectors[3,2] * calif[,12] +
+             vectors[4,2] * calif[,13] +
+             vectors[5,2] * calif[,14] + 
+             vectors[6,2] * calif[,15]
+
+coordinates.pc1 <- function(cell, pc1){
+  return((dot(cell,pc1)))
+}
+coordinates.pc2 <- function(cell,pc2){
+  return((dot(cell,pc2)))
+}
+
+
+
+pc1 <- double(6)
+pc2 <- double(6)
+for (i in 10:16) {
+  pc1[i-10] <- (coordinates.pc1(calif[,i],calif$pc1))^10
+  
+}
+for (i in 10:16) {
+  pc2[i-10] <- (coordinates.pc2(calif[,i],calif$pc2))^10
+}
+
+
+ggplot(data.frame(pc1 = c(pc1),
+                  pc2 = c(pc2),
+                  name=names(calif[10:15])), aes(pc1,pc2, label = name)) + geom_point() + geom_text(check_overlap = FALSE)
+
+
+
+
+# install.packages("pracma")
+# library(pracma)
+# library(ggplot2)
+```
