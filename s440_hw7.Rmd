@@ -4,7 +4,8 @@ output: html_document
 ---
 
 ```{R}
-
+install.packages("ggplot2")
+library(ggplot2)
 a <- as.matrix(data.frame(c(1,.4919,.2636,.4653,-.2277,.0652),
                c(.4919,1,.3127,.3506,-.1917,.2045),
                c(.2635,.3127,1,.4108,.0647,.2493),
@@ -12,7 +13,7 @@ a <- as.matrix(data.frame(c(1,.4919,.2636,.4653,-.2277,.0652),
                c(-.2277,-.1917,.0647,-.2249,1,-.2144),
                c(.0652,.2045,.2493,.2293,-.2144,1)))
 eigen(a)$values
-eigen(a)$vectors
+ggplot(data.frame(eigen(a)$vectors[,1:2]), aes(X1,X2)) + geom_point()
 
 
 
