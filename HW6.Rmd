@@ -1,18 +1,20 @@
 ---
 title: "Untitled"
 output: html_document
+
 ---
 ```{r setup, include=FALSE}
-install.packages("knitr")
-install.packages("dplyr")
-install.packages("ggplot2")
-install.packages("mgcv")
-install.packages("tidyverse")
+# install.packages("knitr")
+# install.packages("dplyr")
+# install.packages("ggplot2")
+# install.packages("mgcv")
+# install.packages("tidyverse")
 library(knitr)
 library(dplyr)
 library(ggplot2)
 library(mgcv)
 library(tidyverse)
+
 # General set-up for the report.
 # I find this useful, but you may improve upon, ignore, or remove
 #  (possibly at your own peril).
@@ -34,13 +36,15 @@ library(mgcv)
 
 ```{r load-data}
 navc <- read.csv("navc.csv")
-navc <- na.omit(navc)
 ```
 
 
 ===============
 #Introduction
 ===============
+
+
+
 Description of Datasets, there is only one datasets in our project "navc"
 The dataset "navc.csv" has 12 variables and 267(ignoring NA values in the row), which is gathered by the political scientist who studied the question whether the non-violent movements are more or less likely to be effective than violent political movement. The specific question is that is the non-violent political movement have lower probability to achieve their goal compared to the dangerous and threatening political movement.
 ```{R}
@@ -77,8 +81,91 @@ colnames(var.table1)<- c("Variable","Descriptions","Type")
 kable(var.table1)
 ```
 
+=================
+#analytical issues
+=================
 
 
+A lot of people always make a assumption that violent movement can be more likely to be successful to achieve their goal than the non-violent movement. But we can see some non violent campaign also can achieve their goal if you take a look at the history of global campaign happened in some countries. In this report, we will use "Bar chart","Logistic regression model","generalized linear model","generalized additive model","**TODO**","**TODO**" to present you about the description of this situation and explain some other related question that can help you understand the analytical question presented below. This dataset is is gathered by the political scientist who studied the question whether the non-violent movements are more or less likely to be effective than violent political movement. The analytic question is that is the non-violent political movement have lower probability to achieve their goal compared to the dangerous and threatening political movement.
+
+For the first question that are non-violent movements more likely to be successful than violent ones? **Table 1**shows the distribution that frequency of violent or non-violent vs the 3 different degree of success. From this table, we can see the biggest number representing the frequency of violent movement who totally failed during that time compared to the lowest frequency representing the frequency of non-violent movement who totally failed. These two statistics gives people a hint that frequency of violent movement failed is higher than the frequency of non-violent movement failed. Moving to the partially successful movement column, we can see that percentage(51.9%) of violent movement is bigger than that(48.1%) of non-violent for just a bit of amount, I will say that we are not sure about **what the 2 more number can explain something more effective here, we can wait until we do the more advanced model to check that because maybe the two more number does matter when involving other factor**. For the last column, non-violent movement fianlly exceed the violent movement for a little amount as well. **We still need to wait until the advanced model can tell you what the small difference can tell something**. Notice here that If we attribute the partial success to the fully success, the frequency of fully success for both violent and non-violent movement is the same, we cannot see whether violent can contribute to success more likely than non-violent. It is interesting.
+
+
+
+
+=================
+#1.are non-violent movements more likely to be successful than violent ones?
+=================
+
+
+```{r, echo=FALSE,fig.cap="Figure 1.0"}
+vio.fal <- nrow(filter(navc, Outcome == 0.0 & Nonviol == 0.0))
+vio.par <- nrow(filter(navc, Outcome == 0.5 & Nonviol == 0.0))
+vio.ful <- nrow(filter(navc, Outcome == 1.0 & Nonviol == 0.0))
+non.fal <- nrow(filter(navc, Outcome == 0.0 & Nonviol == 1.0))
+non.par <- nrow(filter(navc, Outcome == 0.5 & Nonviol == 1.0))
+non.ful <- nrow(filter(navc, Outcome == 1.0 & Nonviol == 1.0))
+effect <- matrix(c("134  (85.4%)","28  (51.9%)","55  (49.1%)",
+                   "23  (14.6%)","26  (48.1%)","57  (50.9%)"), ncol=3,byrow=TRUE)
+colnames(effect) <- c("Totally failed","partially successful","fully successful")
+rownames(effect) <- c("Violent movement","Non-Violent movement")
+kable(effect,caption = "**Table 1**")
+#========
+effect <- matrix(c(vio.fal,vio.par,vio.ful,
+                   non.fal,non.par,non.ful), ncol=3,byrow=TRUE)
+colnames(effect) <- c("Totally failed","partially successful","fully successful")
+rownames(effect) <- c("Violent movement","Non-Violent movement")
+effect.table <- as.table(effect)
+#===============================================================================
+effect <- as.data.frame(effect.table)
+effect$Var1 <- c("failed","failed","partial_suc","partial_suc","fully_suc","fully_suc")
+# Basic Barplot
+my_bar=barplot(effect$Freq , border=F , names.arg=effect$Var1 , las=2 , col=c(rgb(0.3,0.1,0.4,0.6) , rgb(0.3,0.5,0.4,0.6)) , ylim=c(0,max(effect$Freq)+20) , main="" )
+abline(v=c(2.5 , 4.9) , col="grey")
+ 
+# Add the text 
+text(my_bar, effect$Freq+5 , paste("n = ",effect$Freq,sep="") ,cex=1) 
+ 
+#Legende
+legend("topright", legend = c("Violent movement","Non-violent movement" ) , 
+     col = c(rgb(0.3,0.1,0.4,0.6) , rgb(0.3,0.5,0.4,0.6)) , 
+     bty = "n", pch=20 , pt.cex = 2, cex = 0.8, horiz = FALSE, inset = c(0.05, 0.05))
+
+```
+
+
+
+
+=================
+#2.Does violent repression by the government make movements more or less likely to be successful
+=================
+
+
+
+=================
+#3.Is there a difference in this effect between movements which are themselves violent and non-violent?
+=================
+
+
+
+
+=================
+#4.What is the effect of foreign aid to the government and to the movement?
+=================
+
+
+
+
+=================
+#5.Do non-violent movements become more likely to succeed as the goverment becomes more demoratic?
+=================
+
+
+
+
+=================
+#6.Does the difference in probability of success between violent and non-violent movements vary with how democratic the government is?
+=================
 
 ```{r cv-function,  include=FALSE }
 # Code for cross-validated classification error rates
