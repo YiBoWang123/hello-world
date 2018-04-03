@@ -1,0 +1,133 @@
+---
+title: "Untitled"
+output: html_document
+---
+```{r setup, include=FALSE}
+install.packages("knitr")
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("mgcv")
+install.packages("tidyverse")
+library(knitr)
+library(dplyr)
+library(ggplot2)
+library(mgcv)
+library(tidyverse)
+# General set-up for the report.
+# I find this useful, but you may improve upon, ignore, or remove
+#  (possibly at your own peril).
+# Tasks accomplished:
+# Don't print out code
+# Save results so that code blocks aren't re-run unless code
+# changes (cache), _or_ a relevant earlier code block changed (autodep),
+# don't clutter R output with messages or warnings (message, warning)
+library(MASS)
+library(knitr)
+opts_chunk$set(echo=FALSE,
+               cache=TRUE, autodep=TRUE,
+               message=FALSE, warning=FALSE)
+# Turn off meaningless clutter in summary() output
+options(show.signif.stars=FALSE)
+library(ggplot2)
+library(mgcv)
+```
+
+```{r load-data}
+navc <- read.csv("navc.csv")
+navc <- na.omit(navc)
+```
+
+
+===============
+#Introduction
+===============
+Description of Datasets, there is only one datasets in our project "navc"
+The dataset "navc.csv" has 12 variables and 267(ignoring NA values in the row), which is gathered by the political scientist who studied the question whether the non-violent movements are more or less likely to be effective than violent political movement. The specific question is that is the non-violent political movement have lower probability to achieve their goal compared to the dangerous and threatening political movement.
+```{R}
+names(navc) <- c("Campaign","Country","Year","Outcome","Nonviol","Democray","Sanctions","Aid","Support","Viol.Repress","Defect","Duration")
+Descriptions <- c(
+  "The name of the campaign", 
+  "The country where the movement happened",
+  "The tipping point of movement's activity(year)",
+  "The degree of movement's success('failed 0.0','partial success 0.5','fully success 1.0')", 
+  "1 for non-violent and 0 for otherwise)", 
+  "Quantitive measure of how democratic a nation is from -10(un-democratic) to 10(democratic)", 
+  "1 for under international sanctions and 0 otherwise", 
+  "1 for foreign government support to domestic government and 0 otherwise",
+  "1 for foreign government support to domestic movement and 0 otherwise",
+  "1 for governmental violence suppresion and 0 otherwise",
+  "1 for big portions of security force by government sided with movement and 0 otherwise",
+  "Duration of the campaign")
+# Typing the variables:
+Type <- c("Categorical",
+          "Categorical",
+          "Discrete",
+          "Continuous",
+          "Discrete",
+          "Discrete",
+          "Discrete",
+          "Discrete",
+          "Discrete",
+          "Discrete",
+          "Discrete",
+          "Discrete")
+# Binding the decriptions to the variables
+var.table1 <- cbind(names(navc),Descriptions,Type)
+colnames(var.table1)<- c("Variable","Descriptions","Type")
+kable(var.table1)
+```
+
+
+
+
+```{r cv-function,  include=FALSE }
+# Code for cross-validated classification error rates
+# From Lecture 12
+cv.mdl <- function(data, formulae, fit.function = lm, family=gaussian, nfolds = 5) {
+  data <- na.omit(data)
+  formulae <- sapply(formulae, as.formula)
+  responses <- sapply(formulae, function(form) all.vars(form)[1])
+  names(responses) <- as.character(formulae)
+  n <- nrow(data)
+  fold.labels <- sample(rep(1:nfolds, length.out = n))
+  mses <- matrix(NA, nrow = nfolds, ncol = length(formulae))
+  colnames <- as.character(formulae)
+  for (fold in 1:nfolds) {
+    test.rows <- which(fold.labels == fold)
+    train <- data[-test.rows, ]
+    test <- data[test.rows, ]
+    for (form in 1:length(formulae)) {
+      current.model <- fit.function(formula = formulae[[form]], data = train, 
+                                    family=family) #change here
+      predictions <- predict(current.model, newdata = test, type='response') # change here
+      test.responses <- test[, responses[form]]
+      test.errors <- test.responses - predictions
+      mses[fold, form] <- mean(test.errors^2)
+    }
+  }
+  return(colMeans(mses))
+}
+```
+
+
+
+```{r calibration-plot-function, include=FALSE}
+# Code from Lecture 12
+binary_calibration_plot <- function(y, model, breaks = 0:10/10, 
+                                    point.color='blue', line.color='red') {
+  fitted.probs = predict(model, type="response")
+  ind = cut(fitted.probs, breaks)
+  freq = tapply(y, ind, mean)
+  ave.prob = tapply(fitted.probs, ind, mean)
+  se = sqrt(ave.prob*(1-ave.prob)/table(ind))
+  df = data.frame(freq, ave.prob, se)
+  g <- ggplot(df, aes(ave.prob,freq)) + geom_point(color=point.color) + 
+    geom_abline(slope = 1, intercept = 0,color=line.color) +
+    ylab("observed frequency") + xlab("average predicted probability") +
+    geom_errorbar(ymin=ave.prob-1.96*se, ymax=ave.prob+1.96*se) +
+    ylim(0,1)+xlim(0,1) + 
+    geom_rug(aes(x=fitted.probs,y=fitted.probs),data.frame(fitted.probs),sides='b')
+  return(g)  
+}
+
+```
