@@ -9,7 +9,7 @@ output: html_document
 # install.packages("ggplot2")
 # install.packages("mgcv")
 # install.packages("tidyverse")
-#install.packages("stargazer")
+# install.packages("stargazer")
 library(knitr)
 library(dplyr)
 library(ggplot2)
@@ -222,7 +222,7 @@ rownames(table.outviorep) <- c("non-violent movement with repression",
                      "Cross-validation")
 colnames(table.outviorep) <- c("Generalized linear model","Generalized additive model")
 table.outviorep <- as.data.frame(table.outviorep)
-cv.mdl(glm.outviorep)
+#cv.mdl(glm.outviorep)
 ```
 
 
@@ -237,16 +237,35 @@ From _Table 4_, we notice that the coefficient for nonviol does not change a lot
 kable(table.outviorep, caption = "**Table 5.** This table represent that estimated probability of outcome given four different combination of condition on violence(or non-) for movement and violence(or non-) by government under two different model. Cross-validation is given at the bottom of the table under two different model as well")
 ```
 
-As we can see from _Table 5_, two different model produce almost the same probability based on two predictor.
+As we can see from _Table 5_, [two different model produce almost the same probability based on two predictor.]. Let's interpreting the frequency in the _Table 5_. As we can see that when government use violent repression to the campaign, non-violent movement has probability .7641, which is much larger than probability 0.3703 violent movement. In other word, when government _is_ using violence repression, non-violent movement tend to be more effective than violent movement. Similarly, when the government did not use the violence repression to movement, non-violent movement produce the probability .8596, which is much larger than the probability of violent movement In other word, when government _isn't_ using violence repression, non-violent movement tend to be more effective to achieve their goal than the violent movement. If regardless of violent or non-violent movement, the probability of outcome will decrease by 0.1 for non-violent movement and by 0.16 for violent movement if government change non-violent repression to violent repression. In other words, if government choose to use violent repression to the movement, movement is less likely to achieve their goal regardless of violent or non-violent movement. We do not compare 0.1 and 0.16 here cause it does not give a lot of information about the effectiveness of violent or non violent.
+
+-
 
 
+
+
+
+-
+
+
+
+
+-
+
+
+When we finish looking at the generalized linear model with two predictor on nonviol and viol.repress, let see what if I delete the nonviol predictor, and only looking at the impact violent repression by the government make on the outcome. That is, we will find the probability of outcome given violent repression by the govenment regardless of whether movements are violent or non-violent.
+
+
+```{r}
+glm.outrep <- glm(data = navc.outcome, Outcome ~ Viol.Repress, family = 'binomial')
+gam.outrep <- gam(data = navc.outcome, Outcome ~ factor(Viol.Repress), family = 'binomial')
+```
 
 =================
 #2.Does violent repression by the government make movements more or less likely to be successful
 =================
 
 repress vs Outcome
-
 =================
 #3.Is there a difference in this effect between movements which are themselves violent and non-violent?
 =================
