@@ -222,10 +222,12 @@ rownames(table.outviorep) <- c("non-violent movement with repression",
                      "Cross-validation")
 colnames(table.outviorep) <- c("Generalized linear model","Generalized additive model")
 table.outviorep <- as.data.frame(table.outviorep)
+cv.mdl(glm.outviorep)
 ```
 
 
-From _Table 4_, we notice that the coefficient for nonviol does not change a lot compared to the previous model, it only decrease 0.055. **p-value for nonviol(boostrap)... coefficient for viol.repress... p-value for viol.repress(bootstrap)...**
+
+From _Table 4_, we notice that the coefficient for nonviol does not change a lot compared to the previous model, it only decrease 0.055. **p-value for nonviol(boostrap)... coefficient for viol.repress... p-value for viol.repress(bootstrap)...(CV.MDL ASKING PROFESSOR)**
 
 
 
@@ -236,6 +238,9 @@ kable(table.outviorep, caption = "**Table 5.** This table represent that estimat
 ```
 
 As we can see from _Table 5_, two different model produce almost the same probability based on two predictor.
+
+
+
 =================
 #2.Does violent repression by the government make movements more or less likely to be successful
 =================
