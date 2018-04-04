@@ -9,12 +9,13 @@ output: html_document
 # install.packages("ggplot2")
 # install.packages("mgcv")
 # install.packages("tidyverse")
+#install.packages("stargazer")
 library(knitr)
 library(dplyr)
 library(ggplot2)
 library(mgcv)
 library(tidyverse)
-
+library(stargazer)
 # General set-up for the report.
 # I find this useful, but you may improve upon, ignore, or remove
 #  (possibly at your own peril).
@@ -36,6 +37,8 @@ library(mgcv)
 
 ```{r load-data}
 navc <- read.csv("navc.csv")
+cv.glm = function(glmObj) mean((residuals(glmObj) / (1 - hatvalues(glmObj)))^2) 
+cv.gam = function(gamObj) mean((residuals(gamObj) / (1 - gamObj$hat))^2) 
 ```
 
 
@@ -88,12 +91,8 @@ kable(var.table1)
 
 A lot of people always make a assumption that violent movement can be more likely to be successful to achieve their goal than the non-violent movement. But we can see some non violent campaign also can achieve their goal if you take a look at the history of global campaign happened in some countries. In this report, we will use "Bar chart","Logistic regression model","generalized linear model","generalized additive model","**TODO**","**TODO**" to present you about the description of this situation and explain some other related question that can help you understand the analytical question presented below. This dataset is is gathered by the political scientist who studied the question whether the non-violent movements are more or less likely to be effective than violent political movement. The analytic question is that is the non-violent political movement have lower probability to achieve their goal compared to the dangerous and threatening political movement.
 
-For the first question that are non-violent movements more likely to be successful than violent ones? **Table 1**shows the distribution that frequency of violent or non-violent vs the 3 different degree of success. From this table, we can see the biggest number representing the frequency of violent movement who totally failed during that time compared to the lowest frequency representing the frequency of non-violent movement who totally failed. These two statistics gives people a hint that frequency of violent movement failed is higher than the frequency of non-violent movement failed. Moving to the partially successful movement column, we can see that percentage(51.9%) of violent movement is bigger than that(48.1%) of non-violent for just a bit of amount, I will say that we are not sure about **what the 2 more number can explain something more effective here, we can wait until we do the more advanced model to check that because maybe the two more number does matter when involving other factor**. For the last column, non-violent movement fianlly exceed the violent movement for a little amount as well. **We still need to wait until the advanced model can tell you what the small difference can tell something**. Notice here that If we attribute the partial success to the fully success, the frequency of fully success for both violent and non-violent movement is the same, we cannot see whether violent can contribute to success more likely than non-violent. It is interesting.
+For the first question that are non-violent movements more likely to be successful than violent ones? From **Table 1**, we can see the biggest number representing the frequency of violent movement who totally failed during that time compared to the lowest frequency representing the frequency of non-violent movement who totally failed. These two statistics gives people a hint that frequency of violent movement failed is higher than the frequency of non-violent movement failed. Moving to the partially successful movement column, we can see that percentage(51.9%) of violent movement is bigger than that(48.1%) of non-violent for just a bit of amount, I will say that we are not sure about **what the 2 more number can explain something more effective here, we can wait until we do the more advanced model to check that because maybe the two more number does matter when involving other factor**. For the last column, non-violent movement fianlly exceed the violent movement for a little amount as well. **We still need to wait until the advanced model can tell you what the small difference can tell something**. Notice here that If we attribute the partial success to the fully success, the frequency of fully success for both violent and non-violent movement is the same, we cannot see whether violent can contribute to success more likely than non-violent. It is interesting.
 
-But how do we justfiy explicitly the relationship between the outcome and non-violent movement, I introduce the logistic model, which a subset of the generalized linear regression model. This model can predict the probability that Y belongs to particular category when Y response is discrete and has only two value(EX: 0 or 1). And this model's parameter can take either discrete or continuous variable to predict the probability of response Y. The model is the following 
-$\frac e^{i\pi}{1}$.
-
-So, after we run the logistic linear regression on variable Nonviol as a predictor and Outcome as a repsonse. we got 
 
 
 
@@ -103,7 +102,7 @@ So, after we run the logistic linear regression on variable Nonviol as a predict
 =================
 
 
-```{r, echo=FALSE,fig.cap="Figure 1.0"}
+```{r, echo=FALSE,fig.cap="**Figure 1.0** _From this picture, non-violent movement tend to have higher frequency of outcome compared to violent movement which is less than that of non-violent movement for just a little bit of amount. We need more advanced model to determine whether non-violent movement will increase the probability of Outcome_"}
 vio.fal <- nrow(filter(navc, Outcome == 0.0 & Nonviol == 0.0))
 vio.par <- nrow(filter(navc, Outcome == 0.5 & Nonviol == 0.0))
 vio.ful <- nrow(filter(navc, Outcome == 1.0 & Nonviol == 0.0))
@@ -114,7 +113,7 @@ vio.effect <- matrix(c("134  (85.4%)","28  (51.9%)","55  (49.1%)",
                    "23  (14.6%)","26  (48.1%)","57  (50.9%)"), ncol=3,byrow=TRUE)
 colnames(vio.effect) <- c("Totally failed","partially successful","fully successful")
 rownames(vio.effect) <- c("Violent movement","Non-Violent movement")
-kable(vio.effect,caption = "**Table 1**")
+kable(vio.effect,caption = "**Table 1.**  Table shows the distribution that frequency of violent or non-violent vs the 3 different degree of success. And the percentage of two types of movement within certain group")
 #========
 vio.effect <- matrix(c(vio.fal,vio.par,vio.ful,
                    non.fal,non.par,non.ful), ncol=3,byrow=TRUE)
@@ -138,19 +137,110 @@ legend("topright", legend = c("Violent movement","Non-violent movement" ) ,
 
 ```
 
+-
+-
+-
 
-```{R}
-summary(glm(Outcome ~ Nonviol, data = navc, family = "binomial"))
+But how do we justfiy explicitly the relationship between the outcome and non-violent movement, I introduce the logistic model, which is a subset of the generalized linear regression model. This model can predict the probability that Y belongs to particular category when Y response is discrete and has only two value(EX: 0 or 1). And this model's parameter can take either discrete or continuous variable to predict the probability of response Y. There are two model(), which is the same. For the second formula, it is pretty much like transformation on Y. Here are they:
+
+
+$$p(X) = \frac {e^{\beta_{0} + \beta_{1}X_{1} + ... + \beta_{p}X_{p}}}{1 + e^{\beta_{0} + \beta_{1}X_{1} + ... + \beta_{p}X_{p}}}$$.
+
+
+$$log\left( \frac {p(X)}{1-p(X)} \right) = \beta_{0} + \beta_{1}X_{1} + ... + \beta_{p}X_{p}$$
+
+So, after we run the logistic linear regression on variable Nonviol as a predictor and Outcome as a repsonse. we got beta0 and beta1, which you can plug in the formula that I gave to calculate the estimated the probability of The outcome. If the probability of outcome response is greater than one half, we traditionally assign that outcome to 1, and if the proability is less than one half, we traditionally assign that outcome to 0. We do not consider a situation that the probability is exactly one half because it is really rare.
+
+
+```{R, echo=FALSE}
+navc.outcome <- navc
+navc.outcome[navc.outcome == 0.5] <- 1.0
+glm.outvio <- glm(Outcome ~ Nonviol, data = navc.outcome, family = "binomial")
+kable(summary(glm.outvio)$coefficients ,caption = "**Table 2.** _For the_ **Outcome** _data, estimated coefficients of the logistic regression model that predict the probability of_ **Outcome** _using Non-violent movement. Non violent movement is encoded as a dummy variable, with a value of 1 for non violent movement and a value of 0 for a violent movement, and represented by the variable Nonviol i the table_")
 ```
 
 
 
 
+$$Pr(outcome = 1 |nonviol = 1) = \frac {e^{-0.4789 + 1.7623 *1}}{1+e^{-0.4789 + 1.7623 *1}} = 0.783028 $$
+$$Pr(outcome = 1 |nonviol = 0) = \frac {e^{-0.4789 + 1.7623 *0}}{1+e^{-0.4789 + 1.7623 *0}} = 0.382512 $$
+In _Table 2_,the coefficient associated with the dummy variable is positive, and the associated p-value is statistically significant**(USING BOOTSTRAP OR SIMULATION PROCEDURES TO TEST COEFFICIENT WHETHER IT CAN BE TRUSTED)**. This indicates that non-violent movement tend to have higher outcome probabilities than violent movement. At this time, the coefficient is hard to interpret**Asking professor if it is ok to interpret the coefficient** because it is not linear anymore. If you have a continuous variable as a predictor, you can calculate the estimated probability and plot them to see the pattern, **which will be shown below for another analysis.**. But this is just for generalized linear model. What if I use generalied additive model on this?
+
+The generalized additive model looks like the following:
+$$log\left( \frac {p(X)}{1-p(X)} \right) = \beta_{0} + f(x_{1}) + f(x_{2})... + f(x_{p})$$
+
+```{r,result="asis",echo=FALSE,fig.cap="**Figure  1.1**"}
+gam.outvio <- gam(Outcome ~ Nonviol , data = navc.outcome, family = 'binomial')
+pred.gam.outvio <- predict(gam.outvio, type='response')
+gam.data.frame.outvio <- as.data.frame(matrix(c(pred.gam.outvio,navc.outcome$Nonviol),ncol = 2, byrow = FALSE))
+#ggplot(gam.data.frame, aes(factor(V2), V1, color = factor(V2)))+ geom_boxplot()    #to be deleted
+table.outvio<- matrix(c(mean(subset(gam.data.frame.outvio, V2 == 0)$V1),mean(subset(gam.data.frame.outvio, V2 == 1)$V1),cv.gam(gam.outvio),
+                  .382512,0.783028,cv.glm(glm.outvio)),ncol = 3, byrow = TRUE)
+rownames(table.outvio) <- c("Generalized additive model","Generalized linear model")
+colnames(table.outvio) <- c("violent movement","non-violent movement","Cross-validation")
+table.outvio <- as.data.frame(table.outvio)
+kable(table.outvio, caption = "**Table 3.** _This table shows that generalized linear model produces almost exactly the same as the generalized additive model if we have precision 4 th digits. More importantly, the cross validation for two different models is the same, indicating they are both good model for estimating the probability of outcome given whether movement is violent or not_")
+# (confusion.gam <- table(navc.outcome$Outcome, as.integer(pred.gam > 0.5),   #to be deleted unless useful
+#                         dnn = c('reality','prediction'))) 
+#stargazer(table, type = "html", title = "Table with stargazer")   # to be added
+```
+
+-
+
+
+
+-
+
+
+
+-
+
+
+
+
+What if we add another predictor which is the violent repression by government, Is there a difference in this effect between non-violent and violent movement? Let's go check it out!
+
+
+```{R}
+glm.outviorep <- glm(data = navc.outcome, Outcome ~ Nonviol + Viol.Repress, family = 'binomial')
+gam.outviorep <- gam(data = navc.outcome, Outcome ~ factor(Nonviol) + factor(Viol.Repress), family = 'binomial')
+kable(summary(glm.outviorep)$coefficients, caption = "**Table 4.** _This is coefficient table for the generalized linear model for multiple predictor. We follow the_ **Table 2** _by adding the statement that violence repression by government is encoded as a dummy variable, with a value of 1 for violence repression by government and a value of 0 for not violence repression by government_")
+#============================================
+
+pred.gam.outviorep <- predict(gam.outviorep, type='response')
+gam.data.frame <- as.data.frame(matrix(c(pred.gam.outviorep,navc.outcome$Nonviol,navc.outcome$Viol.Repress),ncol = 3, byrow = FALSE))
+
+table.outviorep <- matrix(c(0.7640984,mean(subset(gam.data.frame, V2 == 1 & V3 == 1)$V1),
+                            0.8596018,mean(subset(gam.data.frame, V2 == 1 & V3 == 0)$V1),
+                            0.3702582,mean(subset(gam.data.frame, V2 == 0 & V3 == 1)$V1),
+                            0.5263743,mean(subset(gam.data.frame, V2 == 0 & V3 == 0)$V1),
+                            cv.glm(glm.outviorep),cv.gam(gam.outviorep)),ncol = 2, byrow = TRUE)
+rownames(table.outviorep) <- c("non-violent movement with repression",
+                     "non-violent movement without repression",
+                     "violent movement with repression",
+                     "violent movement without repression",
+                     "Cross-validation")
+colnames(table.outviorep) <- c("Generalized linear model","Generalized additive model")
+table.outviorep <- as.data.frame(table.outviorep)
+```
+
+
+From _Table 4_, we notice that the coefficient for nonviol does not change a lot compared to the previous model, it only decrease 0.055. **p-value for nonviol(boostrap)... coefficient for viol.repress... p-value for viol.repress(bootstrap)...**
+
+
+
+
+
+```{R}
+kable(table.outviorep, caption = "**Table 5.** This table represent that estimated probability of outcome given four different combination of condition on violence(or non-) for movement and violence(or non-) by government under two different model. Cross-validation is given at the bottom of the table under two different model as well")
+```
+
+As we can see from _Table 5_, two different model produce almost the same probability based on two predictor.
 =================
 #2.Does violent repression by the government make movements more or less likely to be successful
 =================
 
-
+repress vs Outcome
 
 =================
 #3.Is there a difference in this effect between movements which are themselves violent and non-violent?
