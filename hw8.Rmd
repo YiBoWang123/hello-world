@@ -1,0 +1,52 @@
+---
+title: "HW8-S440"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+
+a <- data.frame(F.1 =c(.64,
+                         .5,
+                         .46,
+                         .17,
+                         -.29,
+                         -.29,
+                         -.49,
+                         -.52,
+                         -.60),
+                  F.2 =c(.02,
+                         -.06,
+                         -.24,
+                         .74,
+                         .66,
+                         -.08,
+                         .20,
+                         -.03,
+                         -.17)#,
+                  # F.3 =c(.16,
+                  #        -.10,
+                  #        -.19,
+                  #        .97,
+                  #        -.39,
+                  #        .09,
+                  #        -.04,
+                  #        .42,
+                  #        .14)
+                )
+ggplot(a,
+      aes(F.1,F.2)) + geom_point()
+
+```
+
+```{r}
+j <- 11.5
+x <- pi/j
+R <- matrix(c(cos(x),-sin(x),sin(x),cos(x)), ncol = 2, byrow = TRUE)
+#R
+load <- as.matrix(a)
+load %*% R
+ggplot(as.data.frame(load %*% R), aes(V1,V2)) + geom_point()
+
+```
+

@@ -4,7 +4,7 @@ output: html_document
 ---
 
 ```{R}
-install.packages("ggplot2")
+# install.packages("ggplot2")
 library(ggplot2)
 a <- as.matrix(data.frame(c(1,.4919,.2636,.4653,-.2277,.0652),
                c(.4919,1,.3127,.3506,-.1917,.2045),
@@ -13,11 +13,31 @@ a <- as.matrix(data.frame(c(1,.4919,.2636,.4653,-.2277,.0652),
                c(-.2277,-.1917,.0647,-.2249,1,-.2144),
                c(.0652,.2045,.2493,.2293,-.2144,1)))
 eigen(a)$values
+eigen(a)$vectors
 ggplot(data.frame(eigen(a)$vectors[,1:2]), aes(X1,X2)) + geom_point()
 
+a <- as.matrix(data.frame(c(1    ,  .505  ,  .569,  .602,  .621,     .603),
+                          c(.505,  1      , .422,   .467,  .482,     .45),
+                          c(.569,  .422,    1      ,.926,  .877,    .878),
+                          c(.602,  .467,   .926,    1      ,.874,   .894),
+                          c(.621,  .482,  .877,     .874,  1    ,   .937),
+                          c(.603,  .450,   .878,    .894,  .937  ,  1     )))
+eigen(a)$values/6
+
+a <- as.matrix(data.frame(c(.011072,.008019,.00816),
+                          c(.008019,.006417,.006005),
+                          c(.00816,.006005,.006773)))
+a*(2/3) - (one %*% t(one))
+eigen(a)$values/sum(eigen(a)$values)
+
+one <- matrix(c(.484,.375,.603,.519,.861,.744,.411,.319,.717,.855,.499,.594), ncol = 2, byrow = FALSE)
+
+as.matrix(a)- one %*% t(one)
 
 
 
+one <- matrix(c(.1022,.0752,0.765), ncol = 1, byrow = FALSE)
+one %*% t(one)
 ```
 
 ```{r}
