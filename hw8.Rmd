@@ -130,5 +130,17 @@ round(eigen(matrix.a)$vectors[,1:2] %*% t(eigen(matrix.a)$vectors[,1:2]),digits 
 [1] -0.008
 > .206-.794
 [1] -0.588
+
+
+
+install.packages("psych")
+library(psych)
+mydata <- matrix(c(.553,.429,.568,.288,.392,.450,.740,-.273,.724,-.211,.595,-.132), ncol = 2, byrow = TRUE)
+mydata<- matrix(c(.55986,.81610,.77726,-.52420,.64534,.74795,.93911,-.10492,.79821,-.54323), ncol = 2, byrow = TRUE)
+
+bank <- matrix(c(.115,.755,.322,.788,.182,.652,1.0,-.0002,.683,.032), ncol = 2, byrow = TRUE)
+round(varimax(eigen(matrix.a)$vectors[,1:2], normalize = TRUE)$loadings[,1:2], digits = 3)
+varimax(bank, normalize = F)
+eigen(matrix.a)$vectors[,1]^2 + eigen(matrix.a)$vectors[,2]^2
 ```
 
