@@ -139,8 +139,154 @@ mydata <- matrix(c(.553,.429,.568,.288,.392,.450,.740,-.273,.724,-.211,.595,-.13
 mydata<- matrix(c(.55986,.81610,.77726,-.52420,.64534,.74795,.93911,-.10492,.79821,-.54323), ncol = 2, byrow = TRUE)
 
 bank <- matrix(c(.115,.755,.322,.788,.182,.652,1.0,-.0002,.683,.032), ncol = 2, byrow = TRUE)
-round(varimax(eigen(matrix.a)$vectors[,1:2], normalize = TRUE)$loadings[,1:2], digits = 3)
-varimax(bank, normalize = F)
-eigen(matrix.a)$vectors[,1]^2 + eigen(matrix.a)$vectors[,2]^2
+ggplot(as.data.frame(round(varimax(eigen(matrix.a)$vectors[,1:3], normalize = TRUE)$loadings[,1:3], digits = 3)),aes(V2,V1))+geom_point()
+varimax(bank, normalize = F)$loadings[,1:2]
+1-round(eigen(matrix.a)$vectors[,1]^2 + eigen(matrix.a)$vectors[,2]^2 + eigen(matrix.a)$vectors[,3]^2,digit=3)
+
+
+round(eigen(matrix.a)$vectors[,1:2] %*% t(eigen(matrix.a)$vectors[,1:2]),digits = 3)
+
+det(eigen(matrix.a)$vectors[,1:2] %*% t(eigen(matrix.a)$vectors[,1:2]))
+
+
+
+.206-.794
+.373-.627
+.219-.781
+.737-.263
+.209-.791
+.861-.139
+.395-.605
+
+eigen(matrix.a)$values/sum(eigen(matrix.a)$values)[1]
+
+
+0.719228256+0.133359449+0.071131392
+
+
+specific.variance <- 1-(eigen(matrix.a)$vectors[,1]^2 + eigen(matrix.a)$vectors[,2]^2)
+specific.variance[1]
+
+b <- eigen(matrix.a)$vectors[,1:3] %*% t(eigen(matrix.a)$vectors[,1:3])
+b[1,1]<-b[1,1]+specific.variance[1]
+b[2,2]<-b[2,2]+specific.variance[2]
+b[3,3]<-b[3,3]+specific.variance[3]
+b[4,4]<-b[4,4]+specific.variance[4]
+b[5,5]<-b[5,5]+specific.variance[5]
+b[6,6]<-b[6,6]+specific.variance[6]
+b[7,7]<-b[7,7]+specific.variance[7]
+final <- b
+
+valu<-det(final)/det(cov(df.a)*(50/50))
+
+
+round(cov(df.a), digit=3)
+
+
+(50-1-(14+12+5)/6)*log(valu)
+qchisq(.99,((7-2)^2-7-2)/2)
+df.a[51,]
 ```
+
+
+
+
+```{r}
+
+h2 <- eigen(matrix.a)$vectors[,1:2]
+max2 <- varimax(h2, normalize = TRUE)$loadings[,1:2]
+re2 <- round(1-(varimax(h2, normalize = TRUE)$loadings[,1]^2 + varimax(h2, normalize = TRUE)$loadings[,2]^2),digits = 3)
+re2 <- matrix(c(re2[1],0,0,0,0,0,0,
+                0,re2[2],0,0,0,0,0,
+                0,0,re2[3],0,0,0,0,
+                0,0,0,re2[4],0,0,0,
+                0,0,0,0,re2[5],0,0,
+                0,0,0,0,0,re2[6],0,
+                0,0,0,0,0,0,re2[7]),ncol = 7, byrow = TRUE)
+
+
+h3 <- eigen(matrix.a)$vectors[,1:3]
+max3 <- varimax(h3, normalize = TRUE)$loadings[,1:3]
+re3 <- round(1-(varimax(h3, normalize = TRUE)$loadings[,1]^2 + varimax(h3, normalize = TRUE)$loadings[,2]^2+ varimax(h3, normalize = TRUE)$loadings[,3]^2),digits = 3)
+re3 <- matrix(c(re3[1],0,0,0,0,0,0,
+                0,re3[2],0,0,0,0,0,
+                0,0,re3[3],0,0,0,0,
+                0,0,0,re3[4],0,0,0,
+                0,0,0,0,re3[5],0,0,
+                0,0,0,0,0,re3[6],0,
+                0,0,0,0,0,0,re3[7]),ncol = 7, byrow = TRUE)
+
+
+
+
+
+```
+
+
+
+```{r}
+z <- matrix(c(1.4731110,-0.8373381,0.4592711,0.9391235,1.1037107,0.6635204,0.4912474), ncol = 1, byrow = FALSE)
+library(MASS)
+round(solve(t(max3) %*% solve(re3) %*% max3) %*% t(max3)  %*% solve(re3) %*% z, digits = 3)
+t(h3) %*% solve(matrix.a) %*% z
+round(t(h3) %*% solve(matrix.a),digits = 3)
+round(z,digits = 3)
+
+second <- matrix(c(.64,.02,.16,.5,-.06,-.1,.46,-.24,-.19,.17,.74,.97,-.29,.66,-.39,-.29,-.08,.09,-.49,.2,-.04,-.52,-.03,.42,-.6,-.17,.14), ncol = 3, byrow = TRUE)
+
+round(varimax(second, normalize = TRUE)$loadings[,1:3], digits = 3)
+ggplot(as.data.frame(varimax(second, normalize = TRUE)$loadings[,1:2]),aes(V1,V2)) + geom_point()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
