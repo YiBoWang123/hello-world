@@ -1,0 +1,22 @@
+---
+title: "hw10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+spooled<- matrix(c(1,1,1,2),ncol = 2, byrow = TRUE)
+solve(spooled)
+x1 <- matrix(c(3,6), ncol = 1, byrow = TRUE)
+x2 <- matrix(c(5,8), ncol = 1, byrow = TRUE)
+t(x1-x2) %*% solve(spooled)
+
+
+
+
+
+1/6
+
+```
+
+
+
