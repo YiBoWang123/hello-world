@@ -20,3 +20,91 @@ t(x1-x2) %*% solve(spooled)
 
 
 
+
+#11.23
+```{r}
+attach(non)
+attach(mul)
+non <- matrix(c(
+ 18, 152.0, 1.6, 198.4, .0,
+19, 138.0, .4, 180.8, 1.6,
+20, 144.0, .0, 186.4, .8,
+20 ,143.6, 3.2, 194.8, .0,
+ 20, 148.8, .0, 217.6, .0,
+ 67, 154.4, 2.4, 205.2, 6.0,
+ 69 ,171.2 ,1.6, 210.4, .8,
+ 73, 157.2, .4, 204.8 ,.0,
+ 74, 175.2, 5.6, 235.6, .4,
+ 79, 155.0, 1.4, 204.4, .0), ncol = 5, byrow = TRUE)
+
+mul <- matrix(c(
+ 23, 148.0, .8, 205.4, .6,
+ 25, 195.2, 3.2, 262.8, .4,
+ 25, 158.0, 8.0, 209.8, 12.2,
+ 28, 134.4, .0, 198.4, 3.2,
+ 29, 190.2, 14.2, 243.8, 10.6,
+ 57, 165.6, 16.8, 229.2, 15.6,
+ 58, 238.4, 8.0, 304.4, 6.0,
+ 58, 164.0, .8, 216.8, .8,
+ 58, 169.8, .0, 219.2, 1.6,
+ 59, 199.8, 4.6, 250.2, 1.0
+), ncol=5, byrow = TRUE)
+non <- as.data.frame(non)
+mul <- as.data.frame(mul)
+shapiro.test((mul$V1))
+shapiro.test((mul$V2))
+shapiro.test((mul$V3))
+shapiro.test((mul$V4))
+shapiro.test((mul$V5))
+
+qqnorm(mul$V1)
+qqline(mul$V1)
+qqnorm(mul$V2)
+qqline(mul$V2)
+qqnorm(mul$V3)
+qqline(mul$V3)
+qqnorm(mul$V4)
+qqline(mul$V4)
+qqnorm(mul$V5)
+qqline(mul$V5)
+
+non <- scale(non)
+mul <- scale(mul)
+
+s1 <- cov(non)
+s2 <- cov(mul)
+s_pooled  <- 9/18*s1+ 9/18*s2
+spooled_inverse <- round(solve(s_pooled),digits = 3)
+
+x1 <- matrix(c(
+mean((non$V1)),
+mean((non$V2)),
+mean((non$V3)),
+mean((non$V4)),
+mean((non$V5))), ncol = 1, byrow = TRUE)
+
+x2 <- matrix(c(
+mean((mul$V1)),
+mean((mul$V2)),
+mean((mul$V3)),
+mean((mul$V4)),
+mean((mul$V5))),ncol = 1, byrow=TRUE)
+
+t(x1-x2) %*% spooled_inverse %*% 
+1/2 *(t(x1-x2) %*% spooled_inverse %*% (x1+x2))
+
+
+t(x1-x2) %*% spooled_inverse %*% t(mul[1,]) <13.36209
+t(x1-x2) %*% spooled_inverse %*% t(mul[2,]) <13.36209
+t(x1-x2) %*% spooled_inverse %*% t(mul[3,]) <13.36209
+t(x1-x2) %*% spooled_inverse %*% t(mul[4,]) <13.36209
+t(x1-x2) %*% spooled_inverse %*% t(mul[5,]) <13.36209
+t(x1-x2) %*% spooled_inverse %*% t(mul[6,]) <13.36209
+t(x1-x2) %*% spooled_inverse %*% t(mul[7,]) <13.36209
+t(x1-x2) %*% spooled_inverse %*% t(mul[8,]) <13.36209
+t(x1-x2) %*% spooled_inverse %*% t(mul[9,]) <13.36209
+t(x1-x2) %*% spooled_inverse %*% t(mul[10,]) <13.36209
+```
+
+
+
