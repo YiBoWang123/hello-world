@@ -5,6 +5,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 install.packages("psych")
+install.packages("ggplot2")
 library(psych)
 library(ggplot2)
 air <- matrix(c(8, 98, 7, 2 ,12, 8, 2,
@@ -61,5 +62,194 @@ round(fit$loadings[,1:2], digits = 2)
 load <- fit$loadings[,1:2] 
 plot(load,type="n") # set up plot 
 ```
+
+
+#3.
+```{r}
+p.11<- matrix(c(1,.785,.81,.785,1,.816,.81,.816,1), ncol = 3, byrow = TRUE)
+p.12<- matrix(c(.086,.144,.14,.222,.2,.119,.211,.301,.041,.06,.126,.12), ncol = 4, byrow = TRUE)
+p.22<- matrix(c(1,.562,.457,.579,.562,1,.36,.705,.457,.36,1,.273,.579,.705,.273,1),ncol = 4, byrow = TRUE)
+p11 <- matrix(c(1,.4,.4,1),ncol = 2, byrow = TRUE)
+p22 <- matrix(c(1,.2,.2,1),ncol = 2, byrow = TRUE)
+p11.1 <- matrix(c(1.0681,-.2229,-.2229,1.0681),ncol = 2, byrow = TRUE)
+p11.1 %*% p11^(1/2)
+p11^(3)
+whole <- p.11^(-1/2)
+
+hemophilia <- matrix(c(-.0056,-.1657,1,
+                       -.1698,-.1585,1,
+                       -.3469,-.1879,1,
+                       -.0894,.0064,1,
+                       -.1679,.0713,1,
+                       -.0836,.0106,1,
+                       -.1979,-.0005,1,
+                       -.0762,.0392,1,
+                       -.1913,-.2123,1,
+                       -.1092,-.1190,1,
+                       -.5268,-.4773,1,
+                       -.0842,.0248,1,
+                       -.0225,-.0580,1,
+                       .0084,.0782,1,
+                       -.1827,-.1138,1,
+                       .1237,.2140,1,
+                       -.4702,-.3099,1,
+                       -.1519,-.0686,1,
+                       .0006,-.1153,1,
+                       -.2015,-.0498,1,
+                       -.1932,-.2293,1,
+                       .1507,.0933,1,
+                       -.1259,-.0669,1,
+                       -.1551,-.1232,1,
+                       -.1952,-.1007,1,
+                       
+                       -.3478,.1151,2,
+                       -.3618,-.2008,2,
+                       -.4986,-.0860,2,
+                       -.5015,-.2984,2,
+                       -.1326,.0097,2,
+                       -.6911,-.339,2,
+                       -.3608,.1237,2,
+                       -.4535,-.1682,2,
+                       -.3479,-.1721,2,
+                       -.3539,.0722,2,
+                       -.4719,-.1079,2,
+                       -.3610,-.0399,2,
+                       -.3226,.1670,2,
+                       -.4319,-.0687,2,
+                       -.2734,-.0020,2,
+                       -.5573,.0548,2,
+                       -.3755,-.1865,2,
+                       -.4950,-.0153,2,
+                       -.5107,-.2483,2,
+                       -.1652,.2132,2,
+                       -.2447,-.0407,2,
+                       -.4232,-.0998,2,
+                       -.2375,.2876,2,
+                       -.2205,.0046,2,
+                       -.2154,-.0219,2), ncol = 3, byrow = TRUE)
+hemophilia <- as.data.frame(hemophilia)
+names(hemophilia) <- c("activity","antigen","group")
+ggplot(hemophilia, aes(activity,antigen, color = group)) + geom_point()
+qqnorm(hemophilia[,1][1:25])
+qqline(hemophilia[,1][1:25])
+qqnorm(hemophilia[,1][26:50])
+qqline(hemophilia[,1][26:50])
+qqnorm(hemophilia[,2][1:25])
+qqline(hemophilia[,2][1:25])
+qqnorm(hemophilia[,2][26:50])
+qqline(hemophilia[,2][26:50])
+
+
+S_1 <- cov(hemophilia[1:2][26:50,])
+S_2 <- cov(hemophilia[1:2][1:25,])
+
+#(a)
+(S_pooled <- (24/48)*S_1 + (24/48)*S_2)
+t(as.matrix(c(mean(hemophilia[1][1:25,]),
+mean(hemophilia[2][1:25,])))-
+as.matrix(c(mean(hemophilia[1][26:50,]),
+mean(hemophilia[2][26:50,])))) %*% solve(S_pooled)
+
+
+
+x.1 <- matrix(c(2,12,4,10,3,8), ncol=2, byrow = TRUE)
+x.2 <- matrix(c(5,7,3,9,4,5), ncol=2,byrow=TRUE)
+
+pooled <- (2/4)*cov(x.1) + (2/4)*cov(x.2)
+
+
+first <- hemophilia[1:2][1:25,]
+second <- hemophilia[1:2][26:50,]
+
+
+a <- double(25)
+for(i in 1:25) {
+index = i
+X.1.H <- first[-c(index),]
+X.mean.H <- matrix(c(mean(X.1.H[,1]),mean(X.1.H[,2])), ncol = 1, byrow = TRUE)
+second.mean <- matrix(c(mean(second[,1]),mean(second[,2])), ncol = 1, byrow = TRUE)
+S.H.pooled <- (nrow(X.1.H) + nrow(second) - 2)*((nrow(X.1.H)-1)*cov(X.1.H) + (nrow(second)-1)*cov(second))
+inverse.S.H.pooled <- solve(S.H.pooled)
+group1 <- (as.matrix(first)[index,] - t(X.mean.H))%*%inverse.S.H.pooled%*%t(as.matrix(first)[index,] - t(X.mean.H))
+group2 <- (as.matrix(first)[index,] - t(second.mean))%*%inverse.S.H.pooled%*%t(as.matrix(first)[index,] - t(second.mean))
+print(group1 < group2)
+}
+
+for(i in 1:25) {
+index = i
+X.2.H <- second[-c(index),]
+X.mean.H <- matrix(c(mean(X.2.H[,1]),mean(X.2.H[,2])), ncol = 1, byrow = TRUE)
+first.mean <- matrix(c(mean(first[,1]),mean(first[,2])), ncol = 1, byrow = TRUE)
+S.H.pooled <- (nrow(X.2.H) + nrow(first) - 2)*((nrow(X.2.H)-1)*cov(X.2.H) + (nrow(first)-1)*cov(first))
+inverse.S.H.pooled <- solve(S.H.pooled)
+group1 <- (as.matrix(second)[index,] - t(X.mean.H))%*%inverse.S.H.pooled%*%t(as.matrix(second)[index,] - t(X.mean.H))
+group2 <- (as.matrix(second)[index,] - t(first.mean))%*%inverse.S.H.pooled%*%t(as.matrix(second)[index,] - t(first.mean))
+print(group1 < group2)
+}
+
+case <- matrix(c(-.112,-.279,-.059,-.068,.064,.012,-.043,-.052,-.050,-.098,-.094,-.113,-.123,-.143,-.011,-.037,-.210,-.090,-.126,-.019), ncol=2, byrow = TRUE)
+for(i in 1:10){
+  m <- matrix(c(24.93,-18.36),ncol=2, byrow=TRUE) %*% matrix(c(case[i,][1],case[i,][2]),ncol=1, byrow=TRUE)
+  print(m)
+  print(m >= 4.07088)
+}
+```
+
+#6. 
+```{r}
+five <- matrix(c(195.3,153.1,51.4,194.3,167.7,53.7,189.7,139.5,55.5,180.4,121.1,44.4),ncol = 3, byrow=TRUE)
+six<- matrix(c(203.0,156.8,49.8,195.9,166.0,45.8,202.7,166.1,60.4,197.6,161.8,54.1), ncol = 3, byrow=TRUE)
+eight<- matrix(c(193.5,164.5,57.8,187.0,165.1,58.6,201.5,166.8,65.0,200.0,173.8,67.2), ncol = 3, byrow=TRUE)
+five.mean <- matrix(c(mean(five[,1]),mean(five[,2]),mean(five[,3])), ncol = 1, byrow = TRUE)
+six.mean<- matrix(c(mean(six[,1]),mean(six[,2]),mean(six[,3])), ncol = 1, byrow = TRUE)
+eight.mean<- matrix(c(mean(five[,1]),mean(five[,2]),mean(five[,3])), ncol = 1, byrow = TRUE)
+five.s <- cov(five)
+six.s<- cov(six)
+eight.s<- cov(eight)
+W <- (nrow(five)-1)*five.s + (nrow(six)-1)*six.s + (nrow(eight)-1)*eight.s
+x.bar <- ((nrow(five)*five.mean)+(nrow(six)*six.mean) + (nrow(eight)*eight.mean))/(nrow(five)+nrow(six)+nrow(eight))
+B <- nrow(five)*(five.mean-x.bar)%*%t(five.mean-x.bar) + 
+  nrow(six)*(six.mean-x.bar)%*%t(six.mean-x.bar) + 
+  nrow(eight)*(eight.mean-x.bar)%*%t(eight.mean-x.bar)
+lambda <- det(W)/det(B+W)
+((9-3-2)/(3))*((1-sqrt(lambda))/(sqrt(lambda)))
+qf(.95, df1 = 2*3, df2 = 4)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
