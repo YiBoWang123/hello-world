@@ -66,16 +66,34 @@ plot(load,type="n") # set up plot
 
 #3.
 ```{r}
+install.packages("expm")
+library(expm)
 p.11<- matrix(c(1,.785,.81,.785,1,.816,.81,.816,1), ncol = 3, byrow = TRUE)
 p.12<- matrix(c(.086,.144,.14,.222,.2,.119,.211,.301,.041,.06,.126,.12), ncol = 4, byrow = TRUE)
 p.22<- matrix(c(1,.562,.457,.579,.562,1,.36,.705,.457,.36,1,.273,.579,.705,.273,1),ncol = 4, byrow = TRUE)
 p11 <- matrix(c(1,.4,.4,1),ncol = 2, byrow = TRUE)
-p22 <- matrix(c(1,.2,.2,1),ncol = 2, byrow = TRUE)
-p11.1 <- matrix(c(1.0681,-.2229,-.2229,1.0681),ncol = 2, byrow = TRUE)
-p11.1 %*% p11^(1/2)
-p11^(3)
-whole <- p.11^(-1/2)
 
+p22 <- matrix(c(1,.2,.2,1),ncol = 2, byrow = TRUE)
+# p11.1 <- matrix(c(1.0681,-.2229,-.2229,1.0681),ncol = 2, byrow = TRUE)
+# p11.1 %*% p11^(1/2)
+# p11^(3)
+# whole <- p.11^(-1/2)
+round(solve(p.22), digits = 3)
+p22.inverse <- solve(p.22)
+
+
+p11.inverse <- matrix(c(1.6746,.472,-.5747,-.472,1.6952,-.5990,-.5747,-.599,1.7796), ncol = 3, byrow=TRUE)
+whole <- round(p11.inverse %*% p.12 %*% p22.inverse %*% t(p.12) %*% p11.inverse, digits = 6)
+eigen(whole)$values
+eigen(whole)$vectors[,1]
+a <- p11.inverse%*%as.matrix(eigen(whole)$vectors[,1])
+b1 <- p22.inverse%*%t(p.12)%*%a
+1/sqrt(t(b1)%*%p.22%*%b1)  b1
+t(a)%*%p.11
+```
+
+
+```{r}
 hemophilia <- matrix(c(-.0056,-.1657,1,
                        -.1698,-.1585,1,
                        -.3469,-.1879,1,
